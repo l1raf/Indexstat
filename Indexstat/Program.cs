@@ -4,6 +4,17 @@ using Indexstat.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var allowSpecificOrigins = "allowSpecificOrigins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: allowSpecificOrigins,
+        policyBuilder =>
+        {
+            policyBuilder.WithOrigins("http://localhost:3000");
+        });
+});
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -29,6 +40,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(allowSpecificOrigins);
 
 app.UseAuthorization();
 

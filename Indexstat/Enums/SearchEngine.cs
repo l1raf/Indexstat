@@ -2,6 +2,6 @@ namespace Indexstat.Enums;
 
 public enum SearchEngine
 {
-    Google,
+    Google = 1,
     Yandex
 }

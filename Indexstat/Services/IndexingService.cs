@@ -6,10 +6,12 @@ namespace Indexstat.Services;
 public class IndexingService : IIndexingService
 {
     private readonly ISerpApiSearch _search;
+    private readonly HttpClient _httpClient;
 
-    public IndexingService(ISerpApiSearch search)
+    public IndexingService(ISerpApiSearch search, HttpClient httpClient)
     {
         _search = search;
+        _httpClient = httpClient;
     }
 
     public async Task<(string?, GoogleIndexingStatusResponse?)> GetGoogleIndexingStatus(Uri uri)
@@ -43,6 +45,25 @@ public class IndexingService : IIndexingService
         catch (Exception ex)
         {
             return (ex.Message, null);
+        }
+    }
+
+    public async Task<(string? error, string? source)> GetPageSource(Uri uri)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync(uri);
+            var data = await response.Content.ReadAsStringAsync();
+
+            data = data.Replace("</title>",$"</title><base href=\"{uri}\"/>");
+            data = data.Replace("</head>",
+                "<link rel=\"stylesheet\" href=\"http://localhost:3000/nonindexed.css\"/></head");
+
+            return (null, data);
+        }
+        catch (Exception)
+        {
+            return ("Error loading page", null);
         }
     }
 }
