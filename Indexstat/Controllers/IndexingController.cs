@@ -5,27 +5,28 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Indexstat.Controllers;
 
+[Route("api/[controller]")]
 public class IndexingController : ControllerBase
 {
-    private readonly IIndexingService _indexingService;
     private static readonly Random Rand = new();
+    private readonly IIndexingService _indexingService;
 
     public IndexingController(IIndexingService indexingService)
     {
         _indexingService = indexingService;
     }
-    
+
     [HttpGet("source")]
     public async Task<ContentResult> Get(Uri uri)
     {
         if (!uri.IsAbsoluteUri)
             return base.Content(string.Empty, "text/html");
-            //await Response.WriteAsync(string.Empty);
-        
+        //await Response.WriteAsync(string.Empty);
+
         var (_, source) = await _indexingService.GetPageSource(uri);
 
         return base.Content(source ?? string.Empty, "text/html");
-       // await Response.WriteAsync(source);
+        // await Response.WriteAsync(source);
     }
 
     //TODO: remove
