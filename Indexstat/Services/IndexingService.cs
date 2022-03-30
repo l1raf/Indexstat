@@ -47,24 +47,33 @@ public class IndexingService : IIndexingService
             return (ex.Message, null);
         }
     }
-
-    public async Task<(string? error, string? source)> GetPageSource(Uri uri)
+    
+    public async Task<(string? error, string? source)> GetPageSource(Uri uri, Uri cssFileAddress)
     {
         try
         {
             _httpClient.DefaultRequestHeaders.Add("User-Agent", 
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.74 Safari/537.36");
-            _httpClient.DefaultRequestHeaders.Add("Accept", 
-                "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
             // _httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
-            _httpClient.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.9");
-            
+
             var response = await _httpClient.GetAsync(uri);
+
+            response.EnsureSuccessStatusCode();
+            
             var data = await response.Content.ReadAsStringAsync();
 
-            data = data.Replace("</title>",$"</title><base href=\"{uri}\"/>");
+            if (data.IndexOf("<base href", StringComparison.Ordinal) < 0)
+            {
+                data = data.IndexOf("</title>", StringComparison.Ordinal) < 0 
+                    ? data.Replace("<head>",$"<head><base href=\"{uri}\"/>") 
+                    : data.Replace("</title>",$"</title><base href=\"{uri}\"/>");   
+            }
+
             data = data.Replace("</head>",
-                "<link rel=\"stylesheet\" href=\"http://localhost:3000/noindex.css\"/></head>");
+                $"<link rel=\"stylesheet\" href=\"{cssFileAddress}\"/></head>");
+
+            data = data.Replace("<!--noindex-->", "<noindex>");
+            data = data.Replace("<!--/noindex-->", "</noindex>");
 
             return (null, data);
         }

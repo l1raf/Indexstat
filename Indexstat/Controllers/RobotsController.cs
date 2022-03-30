@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Indexstat.Controllers;
 
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class RobotsController : ControllerBase
 {
     private readonly IRobotsService _robotsService;

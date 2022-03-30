@@ -56,17 +56,20 @@ public class RobotsService : IRobotsService
     
     private IEnumerable<Uri> GetDisallowedToBotUrls(RobotsFile robotsFile, string baseUri, string bot)
     {
+        var siteAccessEntries = 
+            robotsFile.SiteAccessEntries as SiteAccessEntry[] ?? robotsFile.SiteAccessEntries.ToArray();
+        
         //Yandex ignores user-agent * if yandex is found
         //Same for Google and googlebot
-        if (robotsFile.SiteAccessEntries.Any(x => x.UserAgents.Contains(bot, StringComparer.InvariantCultureIgnoreCase))
-            && robotsFile.SiteAccessEntries.Any(x => x.UserAgents.Contains("*")))
+        if (siteAccessEntries.Any(x => x.UserAgents.Contains(bot, StringComparer.InvariantCultureIgnoreCase))
+            && siteAccessEntries.Any(x => x.UserAgents.Contains("*")))
         {
-            robotsFile.SiteAccessEntries = robotsFile.SiteAccessEntries
+            siteAccessEntries = siteAccessEntries
                 .Where(x => x.UserAgents
-                    .Contains(bot, StringComparer.InvariantCultureIgnoreCase));
+                    .Contains(bot, StringComparer.InvariantCultureIgnoreCase)).ToArray();
         }
 
-        return robotsFile.SiteAccessEntries
+        return siteAccessEntries
             .Where(x => x.UserAgents
                 .Contains(bot, StringComparer.InvariantCultureIgnoreCase) || x.UserAgents.Contains("*"))
             .Select(entry => entry.PathRules
