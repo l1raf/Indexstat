@@ -36,7 +36,7 @@ public class IndexingService : IIndexingService
     {
         try
         {
-            var totalSearchResult = await _search.GetYandexSearchResult($"site:{uri}");
+            var totalSearchResult = await _search.GetYandexSearchResult($"url:{uri}");
 
             return (null, new YandexIndexingStatusResponse
             {
