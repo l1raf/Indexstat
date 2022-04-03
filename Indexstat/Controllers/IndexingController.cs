@@ -22,9 +22,9 @@ public class IndexingController : ControllerBase
         if (!uri.IsAbsoluteUri)
             return base.Content(string.Empty, "text/html");
 
-        var (_, source) = await _indexingService.GetPageSource(uri, cssFileAddress);
+        var (_, source, contentType) = await _indexingService.GetPageSource(uri, cssFileAddress);
 
-        return base.Content(source ?? string.Empty, "text/html; charset=utf-8");
+        return base.Content(source ?? string.Empty, contentType ?? "text/html; charset=utf-8");
     }
 
     //TODO: remove

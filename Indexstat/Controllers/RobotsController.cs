@@ -12,7 +12,18 @@ public class RobotsController : ControllerBase
     {
         _robotsService = robotsService;
     }
-    
+
+    [HttpGet("headers")]
+    public async Task<ActionResult> GetRobotsResponseHeaders(Uri uri)
+    {
+        var result = await _robotsService.GetRobotsResponseHeaders(uri);
+
+        if (result.error is null)
+            return Ok(result.headers);
+
+        return BadRequest(result.error);
+    }
+
     [HttpGet("disallowed")]
     public async Task<ActionResult> GetDisallowedUrls(Uri uri)
     {

@@ -1,4 +1,4 @@
-using Indexstat.Controllers;
+using System.Text;
 using Indexstat.RobotsParser;
 using Indexstat.SerpApi;
 using Indexstat.Services;
@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
-var allowSpecificOrigins = "allowSpecificOrigins";
+const string allowSpecificOrigins = "allowSpecificOrigins";
 
 builder.Services.AddCors(options =>
 {
@@ -19,6 +19,8 @@ builder.Services.AddCors(options =>
         });
 });
 
+Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -27,8 +29,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddHttpClient<SerpApiSearch>();
-builder.Services.AddHttpClient<IndexingController>();
+builder.Services.AddHttpClient<RobotsService>();
 builder.Services.AddHttpClient<RobotsParser>();
+builder.Services.AddHttpClient<IndexingService>();
 
 builder.Services.AddScoped<IIndexingService, IndexingService>();
 builder.Services.AddScoped<IRobotsService, RobotsService>();

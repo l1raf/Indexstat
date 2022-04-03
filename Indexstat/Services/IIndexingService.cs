@@ -8,5 +8,5 @@ public interface IIndexingService
 
     Task<(string? error, YandexIndexingStatusResponse? response)> GetYandexIndexingStatus(Uri uri);
     
-    Task<(string? error, string? source)> GetPageSource(Uri uri, Uri cssFileAddress);
+    Task<(string? error, string? source, string? contentType)> GetPageSource(Uri uri, Uri cssFileAddress);
 }
