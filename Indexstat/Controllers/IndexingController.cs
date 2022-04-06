@@ -10,7 +10,6 @@ public class IndexingController : ControllerBase
 {
     private static readonly Random Rand = new();
     private readonly IIndexingService _indexingService;
-    private static int kek = 0;
 
     public IndexingController(IIndexingService indexingService)
     {

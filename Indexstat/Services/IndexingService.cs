@@ -68,8 +68,9 @@ public class IndexingService : IIndexingService
 
             response.EnsureSuccessStatusCode();
 
-            if (!CanShowInsideIframe(response))
-                return (null, "Страница не может быть отображена.", "text/html; charset=utf-8");
+            //Trying to be good
+            // if (!CanShowInsideIframe(response))
+            //     return (null, "Страница не может быть отображена.", "text/html; charset=utf-8");
 
             data = await response.Content.ReadAsStringAsync();
 
@@ -101,7 +102,7 @@ public class IndexingService : IIndexingService
 
     private string GetStyles(SearchEngine engine, string? noindexColor, string? nofollowColor)
     {
-        noindexColor ??= "#0307fb";
+        noindexColor ??= "#4BFB03";
         nofollowColor ??= "#03defb";
         
         return engine switch
