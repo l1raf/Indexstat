@@ -1,4 +1,6 @@
+using System.Text.RegularExpressions;
 using Indexstat.DTOs;
+using Indexstat.Enums;
 using Indexstat.SerpApi;
 
 namespace Indexstat.Services;
@@ -48,7 +50,8 @@ public class IndexingService : IIndexingService
         }
     }
 
-    public async Task<(string? error, string? source, string? contentType)> GetPageSource(Uri uri, Uri cssFileAddress)
+    public async Task<(string?, string?, string?)> GetPageSource(Uri uri, SearchEngine engine, 
+        string noindexColor, string nofollowColor)
     {
         string? data = null;
 
@@ -74,13 +77,13 @@ public class IndexingService : IIndexingService
                 ? data.Replace("<head>", $"<head><base href=\"{uri}\"/>")
                 : data.Replace("</title>", $"</title><base href=\"{uri}\"/>");
 
-            data = data.Replace("</head>",
-                $"<link rel=\"stylesheet\" href=\"{cssFileAddress}\"/></head>");
+            data = data.Replace("</head>", $"{GetStyles(engine, noindexColor, nofollowColor)}</head>");
 
-            data = data.Replace("<!--noindex-->", "<noindex>");
-            data = data.Replace("<!--/noindex-->", "</noindex>");
-            data = data.Replace("<!-- noindex -->", "<noindex>");
-            data = data.Replace("<!-- /noindex -->", "</noindex>");
+            if (engine == SearchEngine.Yandex)
+            {
+                data = Regex.Replace(data, @"<!--(\s*)noindex(\s*)-->", "<noindex>");
+                data = Regex.Replace(data, @"<!--(\s*)/noindex(\s*)-->", "</noindex>");
+            }
 
             return (
                 null,
@@ -94,6 +97,28 @@ public class IndexingService : IIndexingService
         {
             return ("Error loading page", data, null);
         }
+    }
+
+    private string GetStyles(SearchEngine engine, string? noindexColor, string? nofollowColor)
+    {
+        noindexColor ??= "#0307fb";
+        nofollowColor ??= "#03defb";
+        
+        return engine switch
+        {
+            //Google ignores <noindex>
+            SearchEngine.Google => "<style>" +
+                                   "*[ref~=\"nofollow\"], *[rel~=\"nofollow\"] {" +
+                                   $"background-color: {nofollowColor};" + "}" +
+                                   "</style>",
+            SearchEngine.Yandex => "<style>" +
+                                   "noindex, noindex p, noindex a, noindex div {" +
+                                   $"background-color: {noindexColor};" + $"background: {noindexColor};" + "}" +
+                                   "*[ref~=\"nofollow\"], *[rel~=\"nofollow\"] {" +
+                                   $"background-color: {nofollowColor};" + "}" +
+                                   "</style>",
+            _ => string.Empty
+        };
     }
 
     private bool CanShowInsideIframe(HttpResponseMessage response)

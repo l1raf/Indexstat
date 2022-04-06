@@ -10,19 +10,20 @@ public class IndexingController : ControllerBase
 {
     private static readonly Random Rand = new();
     private readonly IIndexingService _indexingService;
+    private static int kek = 0;
 
     public IndexingController(IIndexingService indexingService)
     {
         _indexingService = indexingService;
     }
-    
+
     [HttpGet("source")]
-    public async Task<ContentResult> GetSource(Uri uri, Uri cssFileAddress)
+    public async Task<ContentResult> GetSource(Uri uri, SearchEngine engine, string noindexColor, string nofollowColor)
     {
         if (!uri.IsAbsoluteUri)
             return base.Content(string.Empty, "text/html");
 
-        var (_, source, contentType) = await _indexingService.GetPageSource(uri, cssFileAddress);
+        var (_, source, contentType) = await _indexingService.GetPageSource(uri, engine, noindexColor, nofollowColor);
 
         return base.Content(source ?? string.Empty, contentType ?? "text/html; charset=utf-8");
     }

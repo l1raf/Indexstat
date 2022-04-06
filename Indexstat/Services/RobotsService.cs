@@ -34,7 +34,7 @@ public class RobotsService : IRobotsService
             
             if (response.Headers.TryGetValues("X-Robots-Tag", out IEnumerable<string>? headerValues))
             {
-                headersResponse.Headers = headerValues.Select(x => $"X-Robots-tag: {x}");
+                headersResponse.Headers = headerValues.Select(x => $"X-Robots-Tag: {x}");
             }
             
             return (null, headersResponse);
