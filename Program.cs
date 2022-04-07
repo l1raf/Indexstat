@@ -15,7 +15,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: allowSpecificOrigins,
         policyBuilder =>
         {
-            policyBuilder.WithOrigins("http://localhost:3000");
+            policyBuilder.WithOrigins("https://agreeable-coast-043b90910.1.azurestaticapps.net");
         });
 });
 

@@ -39,9 +39,9 @@ public class RobotsService : IRobotsService
             
             return (null, headersResponse);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return (e.Message, null);
+            return ("Error fetching response headers", null);
         }
     }
 
@@ -52,10 +52,9 @@ public class RobotsService : IRobotsService
             var baseUri = uri.GetLeftPart(UriPartial.Authority);
             return (null, GetDisallowedToBotUrls(await GetRobotsFile(uri), baseUri, bot));
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return (e.Message, null);
-            // return ("Failed to get robots.txt", null);
+            return ("Failed to get robots.txt", null);
         }
     }
 
@@ -65,7 +64,7 @@ public class RobotsService : IRobotsService
         {
             var baseUri = uri.GetLeftPart(UriPartial.Authority);
             var robotsFile = await GetRobotsFile(uri);
-
+            
             return (null, new RobotsTxtResponse
             {
                 RobotsUri = robotsFile.Uri,
@@ -73,10 +72,9 @@ public class RobotsService : IRobotsService
                 Yandex = GetDisallowedToBotUrls(robotsFile, baseUri, "yandex")
             });
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return (e.Message, null);
-            // return ("Failed to get robots.txt", null);
+            return ("Failed to get robots.txt", null);
         }
     }
 

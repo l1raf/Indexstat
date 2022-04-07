@@ -27,9 +27,9 @@ public class IndexingService : IIndexingService
                 TotalSearchResults = totalSearchResult
             });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return (ex.Message, null);
+            return ("Error fetching search results", null);
         }
     }
 
@@ -44,13 +44,13 @@ public class IndexingService : IIndexingService
                 TotalSearchResults = totalSearchResult
             });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return (ex.Message, null);
+            return ("Error fetching search results", null);
         }
     }
 
-    public async Task<(string?, string?, string?)> GetPageSource(Uri uri, SearchEngine engine, 
+    public async Task<(string?, string?, string?)> GetPageSource(Uri uri, SearchEngine engine,
         string noindexColor, string nofollowColor)
     {
         string? data = null;
@@ -69,8 +69,8 @@ public class IndexingService : IIndexingService
             response.EnsureSuccessStatusCode();
 
             //Trying to be good
-            // if (!CanShowInsideIframe(response))
-            //     return (null, "Страница не может быть отображена.", "text/html; charset=utf-8");
+            if (!ShowInsideIframe(response))
+                return (null, "Страница не может быть отображена.", "text/html; charset=utf-8");
 
             data = await response.Content.ReadAsStringAsync();
 
@@ -104,7 +104,7 @@ public class IndexingService : IIndexingService
     {
         noindexColor ??= "#4BFB03";
         nofollowColor ??= "#03defb";
-        
+
         return engine switch
         {
             //Google ignores <noindex>
@@ -122,7 +122,7 @@ public class IndexingService : IIndexingService
         };
     }
 
-    private bool CanShowInsideIframe(HttpResponseMessage response)
+    private bool ShowInsideIframe(HttpResponseMessage response)
     {
         if (response.Headers.TryGetValues("X-Frame-Options", out var frameOptions))
             return !frameOptions.Intersect(
