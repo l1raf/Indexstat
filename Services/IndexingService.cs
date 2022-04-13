@@ -74,10 +74,7 @@ public class IndexingService : IIndexingService
 
             data = await response.Content.ReadAsStringAsync();
 
-            data = data.IndexOf("</title>", StringComparison.Ordinal) < 0
-                ? data.Replace("<head>", $"<head><base href=\"{uri}\"/>")
-                : data.Replace("</title>", $"</title><base href=\"{uri}\"/>");
-
+            data = data.Replace("<head>", $"<head><base href=\"{uri}\">");
             data = data.Replace("</head>", $"{GetStyles(engine, noindexColor, nofollowColor)}</head>");
 
             if (engine == SearchEngine.Yandex)
@@ -108,11 +105,11 @@ public class IndexingService : IIndexingService
         return engine switch
         {
             //Google ignores <noindex>
-            SearchEngine.Google => "<style>" +
+            SearchEngine.Google => "<style type=\"text/css\">" +
                                    "*[ref~=\"nofollow\"], *[rel~=\"nofollow\"] {" +
                                    $"background-color: {nofollowColor};" + "}" +
                                    "</style>",
-            SearchEngine.Yandex => "<style>" +
+            SearchEngine.Yandex => "<style type=\"text/css\">" +
                                    "noindex, noindex p, noindex a, noindex div {" +
                                    $"background-color: {noindexColor};" + $"background: {noindexColor};" + "}" +
                                    "*[ref~=\"nofollow\"], *[rel~=\"nofollow\"] {" +
