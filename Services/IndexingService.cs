@@ -74,8 +74,8 @@ public class IndexingService : IIndexingService
 
             data = await response.Content.ReadAsStringAsync();
 
-            data = data.Replace("<head>", $"<head><base href=\"{uri}\">");
-            data = data.Replace("</head>", $"{GetStyles(engine, noindexColor, nofollowColor)}</head>");
+            data = Regex.Replace(data, @"<(\s*)head(\s*)>", $"<head><base href=\"{uri}\"/>");
+            data = Regex.Replace(data, @"<(\s*)/head(\s*)>", $"{GetStyles(engine, noindexColor, nofollowColor)}</head>");
 
             if (engine == SearchEngine.Yandex)
             {
