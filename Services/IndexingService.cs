@@ -53,8 +53,6 @@ public class IndexingService : IIndexingService
     public async Task<(string?, string?, string?)> GetPageSource(Uri uri, SearchEngine engine,
         string noindexColor, string nofollowColor)
     {
-        string? data = null;
-
         try
         {
             _httpClient.DefaultRequestHeaders.Add("User-Agent",
@@ -72,7 +70,7 @@ public class IndexingService : IIndexingService
             if (!ShowInsideIframe(response))
                 return (null, "Страница не может быть отображена.", "text/html; charset=utf-8");
 
-            data = await response.Content.ReadAsStringAsync();
+            var data = await response.Content.ReadAsStringAsync();
 
             data = Regex.Replace(data, @"<(\s*)head(\s*)>", $"<head><base href=\"{uri}\"/>");
             data = Regex.Replace(data, @"<(\s*)/head(\s*)>", $"{GetStyles(engine, noindexColor, nofollowColor)}</head>");
@@ -93,7 +91,7 @@ public class IndexingService : IIndexingService
         }
         catch (Exception)
         {
-            return ("Error loading page", data, null);
+            return (null, "Страница не может быть отображена.", "text/html; charset=utf-8");
         }
     }
 
