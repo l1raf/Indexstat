@@ -53,5 +53,5 @@ jobs:
         with:
           app-name: 'indexstatapi'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5C61D7C6F92D4192B7292359CE7EA869 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_9EC37A512CC54FC5889C9C6CD417B64B }}
           package: .
